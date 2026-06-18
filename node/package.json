@@ -1,0 +1,62 @@
+{
+  "name": "@stockfit/api",
+  "version": "0.1.1",
+  "description": "Official TypeScript/Node.js SDK for the StockFit API (developer.stockfit.io) — SEC EDGAR financials, filings, fund data, ownership, and earnings.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "fetch-spec": "node scripts/fetch-spec.mjs",
+    "generate": "openapi-ts",
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "test": "node --test"
+  },
+  "keywords": [
+    "stockfit",
+    "sec",
+    "edgar",
+    "financials",
+    "stocks",
+    "etf",
+    "api",
+    "sdk",
+    "fundamentals"
+  ],
+  "license": "MIT",
+  "author": "Second Dot LLC",
+  "homepage": "https://developer.stockfit.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Second-Dot-LLC/stockfit-api.git",
+    "directory": "node"
+  },
+  "bugs": {
+    "url": "https://github.com/Second-Dot-LLC/stockfit-api/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.13.1"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.98.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}
