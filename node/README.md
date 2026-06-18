@@ -1,6 +1,6 @@
 # @stockfit/api
 
-Official TypeScript / Node.js SDK for the [StockFit API](https://api.stockfit.io) — SEC EDGAR financials, filings, fund and ETF data, ownership, insider transactions, and earnings.
+Official TypeScript / Node.js SDK for the [StockFit API](https://api.stockfit.io): SEC EDGAR financials, filings, fund and ETF data, ownership, insider transactions, and earnings.
 
 Fully typed, generated from the StockFit OpenAPI spec.
 
@@ -39,6 +39,12 @@ createClient({
 });
 ```
 
+## Examples
+
+Runnable example apps live in [`examples/`](examples/):
+
+- [`company-explorer`](examples/company-explorer) is a Next.js app with a search bar that shows company details. It calls the SDK server-side via a Next route handler, so the API token stays on the server and never reaches the browser (the recommended pattern for web apps).
+
 ## License
 
-MIT © Second Dot LLC. Use of the StockFit API itself is governed by the StockFit terms of service / subscription.
+MIT, Copyright Second Dot LLC. Use of the StockFit API itself is governed by the StockFit terms of service and your subscription.

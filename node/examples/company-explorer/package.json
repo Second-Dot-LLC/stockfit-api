@@ -1,0 +1,24 @@
+{
+  "name": "company-explorer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Example: a Next.js app with a search bar that shows company details, using @stockfit/api server-side (token never reaches the browser).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@stockfit/api": "^0.1.1",
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.2"
+  }
+}
