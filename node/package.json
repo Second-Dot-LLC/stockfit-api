@@ -1,6 +1,6 @@
 {
   "name": "@stockfit/api",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Official TypeScript/Node.js SDK for the StockFit API (developer.stockfit.io) — SEC EDGAR financials, filings, fund data, ownership, and earnings.",
   "type": "module",
   "main": "./dist/index.cjs",

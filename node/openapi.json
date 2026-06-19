@@ -95,6 +95,144 @@
       }
     },
     "schemas": {
+      "Period": {
+        "type": "string",
+        "enum": [
+          "annual",
+          "quarter",
+          "ttm"
+        ],
+        "default": "annual",
+        "description": "Reporting period: `annual`, `quarter`, or `ttm` (trailing twelve months). TTM sums the last 4 quarters for flow items and uses the latest quarter for point-in-time items."
+      },
+      "BasePeriod": {
+        "type": "string",
+        "enum": [
+          "annual",
+          "quarter"
+        ],
+        "default": "annual",
+        "description": "Base reporting period: `annual` or `quarter` (the periods companies actually report, without the derived `ttm` rollup)."
+      },
+      "FiscalPeriod": {
+        "type": "string",
+        "enum": [
+          "FY",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "TTM"
+        ],
+        "description": "Fiscal period of a reported value: `FY` (annual), `Q1`-`Q4` (quarterly), or `TTM` (trailing twelve months).",
+        "example": "FY"
+      },
+      "BaseFiscalPeriod": {
+        "type": "string",
+        "enum": [
+          "FY",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ],
+        "description": "Fiscal period of a reported value: `FY` (annual) or `Q1`-`Q4` (quarterly).",
+        "example": "FY"
+      },
+      "FilingType": {
+        "type": "string",
+        "enum": [
+          "10-K",
+          "10-Q",
+          "20-F",
+          "8-K",
+          "DEF 14A",
+          "DEFA14A",
+          "13D",
+          "13G",
+          "3",
+          "4",
+          "5",
+          "13F-HR",
+          "NPORT-P",
+          "N-CEN",
+          "EFFECT",
+          "25-NSE",
+          "ARS"
+        ],
+        "description": "SEC filing form type."
+      },
+      "FilingEvent": {
+        "type": "string",
+        "enum": [
+          "material_agreement",
+          "agreement_termination",
+          "bankruptcy",
+          "mine_safety",
+          "acquisition_disposition",
+          "earnings",
+          "debt_obligation",
+          "debt_acceleration",
+          "restructuring",
+          "impairment",
+          "delisting",
+          "unregistered_sale",
+          "rights_modification",
+          "auditor_change",
+          "restatement",
+          "control_change",
+          "officer_change",
+          "bylaws_amendment",
+          "trading_suspension",
+          "ethics_amendment",
+          "shell_status_change",
+          "shareholder_vote",
+          "shareholder_nomination",
+          "abs_material",
+          "servicer_change",
+          "credit_enhancement",
+          "distribution_failure",
+          "securities_act_update",
+          "reg_fd",
+          "other",
+          "financial_exhibits"
+        ],
+        "description": "Material event category extracted from an 8-K filing."
+      },
+      "AltmanZone": {
+        "type": "string",
+        "enum": [
+          "safe",
+          "grey",
+          "distress"
+        ],
+        "description": "Altman Z-Score classification: `safe`, `grey`, or `distress`."
+      },
+      "Confidence": {
+        "type": "string",
+        "enum": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "description": "Confidence level: `high`, `medium`, or `low`."
+      },
+      "SplitDirection": {
+        "type": "string",
+        "enum": [
+          "forward",
+          "reverse"
+        ],
+        "description": "Stock split direction, derived from the split `ratio`:\n\n| Value | Meaning |\n|-------|---------|\n| `forward` | `ratio > 1`: share count increases, per-share price decreases. Typical of large-caps managing share price after a long run-up. |\n| `reverse` | `ratio < 1`: share count decreases, per-share price increases. Often used by small-caps to maintain exchange listing requirements (e.g. NASDAQ minimum bid price). |"
+      },
+      "SecurityType": {
+        "type": "string",
+        "enum": [
+          "stock",
+          "etf"
+        ],
+        "description": "Security type: `stock` or `etf`."
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -2797,16 +2935,7 @@
                           "example": 2025
                         },
                         "fiscalPeriod": {
-                          "type": "string",
-                          "enum": [
-                            "FY",
-                            "Q1",
-                            "Q2",
-                            "Q3",
-                            "Q4",
-                            "TTM"
-                          ],
-                          "example": "FY"
+                          "$ref": "#/components/schemas/FiscalPeriod"
                         },
                         "eps": {
                           "type": "number",
@@ -2888,15 +3017,12 @@
                           "example": null
                         },
                         "altmanZone": {
-                          "type": "string",
-                          "nullable": true,
-                          "enum": [
-                            "safe",
-                            "grey",
-                            "distress",
-                            null
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/AltmanZone"
+                            }
                           ],
-                          "example": null
+                          "nullable": true
                         },
                         "nextEarningsDate": {
                           "type": "string",
@@ -2925,16 +3051,7 @@
                           "example": 2025
                         },
                         "fiscalPeriod": {
-                          "type": "string",
-                          "enum": [
-                            "FY",
-                            "Q1",
-                            "Q2",
-                            "Q3",
-                            "Q4",
-                            "TTM"
-                          ],
-                          "example": "FY"
+                          "$ref": "#/components/schemas/FiscalPeriod"
                         },
                         "sector": {
                           "type": "string",
@@ -3478,13 +3595,7 @@
                         "example": 4
                       },
                       "type": {
-                        "type": "string",
-                        "enum": [
-                          "forward",
-                          "reverse"
-                        ],
-                        "description": "Split direction, derived from `ratio`:\n\n| Value | Meaning |\n|-------|---------|\n| `forward` | `ratio > 1` — share count increases, per-share price decreases. Typical of large-caps managing share price after a long run-up. |\n| `reverse` | `ratio < 1` — share count decreases, per-share price increases. Often used by small-caps to maintain exchange listing requirements (e.g. NASDAQ minimum bid price). |\n",
-                        "example": "forward"
+                        "$ref": "#/components/schemas/SplitDirection"
                       },
                       "accession": {
                         "type": "string",
@@ -3664,13 +3775,7 @@
                             "example": 3
                           },
                           "type": {
-                            "type": "string",
-                            "enum": [
-                              "forward",
-                              "reverse"
-                            ],
-                            "description": "Split direction, derived from `ratio`:\n\n| Value | Meaning |\n|-------|---------|\n| `forward` | `ratio > 1` — share count increases, per-share price decreases. |\n| `reverse` | `ratio < 1` — share count decreases, per-share price increases. |\n",
-                            "example": "forward"
+                            "$ref": "#/components/schemas/SplitDirection"
                           },
                           "accession": {
                             "type": "string",
@@ -4623,13 +4728,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "Reporting period. `ttm` returns trailing twelve months (single entry)."
           },
@@ -4677,17 +4776,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "eps": {
                         "type": "number",
@@ -4825,13 +4914,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "Reporting period. `ttm` returns trailing twelve months (single entry)."
           },
@@ -4879,17 +4962,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "dividendPerShare": {
                         "type": "number",
@@ -5040,17 +5113,7 @@
                       "example": 2025
                     },
                     "fiscalPeriod": {
-                      "type": "string",
-                      "enum": [
-                        "FY",
-                        "Q1",
-                        "Q2",
-                        "Q3",
-                        "Q4",
-                        "TTM"
-                      ],
-                      "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                      "example": "FY"
+                      "$ref": "#/components/schemas/FiscalPeriod"
                     },
                     "eps": {
                       "type": "number",
@@ -5150,15 +5213,12 @@
                       "example": 5.72
                     },
                     "altmanZone": {
-                      "type": "string",
-                      "nullable": true,
-                      "enum": [
-                        "safe",
-                        "grey",
-                        "distress"
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/AltmanZone"
+                        }
                       ],
-                      "description": "Altman Z-Score classification",
-                      "example": "safe"
+                      "nullable": true
                     },
                     "nextEarningsDate": {
                       "type": "string",
@@ -5494,12 +5554,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "Reporting period"
           },
@@ -5698,12 +5753,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "Reporting period"
           },
@@ -6923,26 +6973,7 @@
             "name": "type",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "10-K",
-                "10-Q",
-                "20-F",
-                "8-K",
-                "DEF 14A",
-                "DEFA14A",
-                "13D",
-                "13G",
-                "3",
-                "4",
-                "5",
-                "13F-HR",
-                "NPORT-P",
-                "N-CEN",
-                "EFFECT",
-                "25-NSE",
-                "ARS"
-              ]
+              "$ref": "#/components/schemas/FilingType"
             },
             "description": "SEC form type to filter by. If omitted, all filing types are returned.\nIgnored when `event` is provided (event implies type=8-K).\n\n| Type | Description |\n|------|-------------|\n| `10-K` | Annual report |\n| `10-Q` | Quarterly report |\n| `20-F` | Annual report for foreign private issuers |\n| `8-K` | Current report (key events) |\n| `DEF 14A` | Proxy statement |\n| `DEFA14A` | Additional proxy solicitation materials |\n| `13D` | Beneficial ownership (>5%, active) |\n| `13G` | Beneficial ownership (>5%, passive) |\n| `3` | Insider initial ownership |\n| `4` | Insider ownership changes |\n| `5` | Insider annual summary |\n| `13F-HR` | Institutional holdings (quarterly) |\n| `NPORT-P` | Fund portfolio holdings (monthly) |\n| `N-CEN` | Fund annual census report |\n| `EFFECT` | SEC notice of registration effectiveness (the first `EFFECT` per company is its IPO date) |\n| `25-NSE` | Exchange-filed notification of removal from listing (authoritative delisting; the `signatureDate` is the official delisting date) |\n| `ARS` | Annual Report to Shareholders (glossy/narrative companion to the 10-K) |\n",
             "example": "10-K"
@@ -6952,40 +6983,7 @@
             "name": "event",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "material_agreement",
-                "agreement_termination",
-                "bankruptcy",
-                "mine_safety",
-                "acquisition_disposition",
-                "earnings",
-                "debt_obligation",
-                "debt_acceleration",
-                "restructuring",
-                "impairment",
-                "delisting",
-                "unregistered_sale",
-                "rights_modification",
-                "auditor_change",
-                "restatement",
-                "control_change",
-                "officer_change",
-                "bylaws_amendment",
-                "trading_suspension",
-                "ethics_amendment",
-                "shell_status_change",
-                "shareholder_vote",
-                "shareholder_nomination",
-                "abs_material",
-                "servicer_change",
-                "credit_enhancement",
-                "distribution_failure",
-                "securities_act_update",
-                "reg_fd",
-                "other",
-                "financial_exhibits"
-              ]
+              "$ref": "#/components/schemas/FilingEvent"
             },
             "description": "Filter 8-K filings by event type. Automatically implies `type=8-K`.\n\n| Event | SEC Item | Description |\n|-------|----------|-------------|\n| `earnings` | 2.02 | Earnings results |\n| `officer_change` | 5.02 | Officer or director departure/appointment |\n| `material_agreement` | 1.01 | Entry into material definitive agreement |\n| `acquisition_disposition` | 2.01 | Acquisition or disposition of assets |\n| `control_change` | 5.01 | Change in control of registrant |\n| `restatement` | 4.02 | Financial restatement |\n| `bankruptcy` | 1.03 | Bankruptcy or receivership |\n| `restructuring` | 2.05 | Exit or disposal activities |\n| `reg_fd` | 7.01 | Regulation FD disclosure |\n| `other` | 8.01 | Other events |\n| `financial_exhibits` | 9.01 | Financial statements and exhibits |\n",
             "example": "earnings"
@@ -7141,26 +7139,7 @@
             "name": "type",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "10-K",
-                "10-Q",
-                "20-F",
-                "8-K",
-                "DEF 14A",
-                "DEFA14A",
-                "13D",
-                "13G",
-                "3",
-                "4",
-                "5",
-                "13F-HR",
-                "NPORT-P",
-                "N-CEN",
-                "EFFECT",
-                "25-NSE",
-                "ARS"
-              ]
+              "$ref": "#/components/schemas/FilingType"
             },
             "description": "SEC form type to filter by. Ignored when `event` is provided.",
             "example": "8-K"
@@ -7170,40 +7149,7 @@
             "name": "event",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "material_agreement",
-                "agreement_termination",
-                "bankruptcy",
-                "mine_safety",
-                "acquisition_disposition",
-                "earnings",
-                "debt_obligation",
-                "debt_acceleration",
-                "restructuring",
-                "impairment",
-                "delisting",
-                "unregistered_sale",
-                "rights_modification",
-                "auditor_change",
-                "restatement",
-                "control_change",
-                "officer_change",
-                "bylaws_amendment",
-                "trading_suspension",
-                "ethics_amendment",
-                "shell_status_change",
-                "shareholder_vote",
-                "shareholder_nomination",
-                "abs_material",
-                "servicer_change",
-                "credit_enhancement",
-                "distribution_failure",
-                "securities_act_update",
-                "reg_fd",
-                "other",
-                "financial_exhibits"
-              ]
+              "$ref": "#/components/schemas/FilingEvent"
             },
             "description": "Filter 8-K filings by event type. Automatically implies `type=8-K`.",
             "example": "earnings"
@@ -7558,14 +7504,7 @@
                             "example": "2025-05-02"
                           },
                           "confidence": {
-                            "type": "string",
-                            "enum": [
-                              "high",
-                              "medium",
-                              "low"
-                            ],
-                            "description": "Confidence in the prediction based on historical consistency",
-                            "example": "high"
+                            "$ref": "#/components/schemas/Confidence"
                           },
                           "basedOn": {
                             "type": "string",
@@ -7955,14 +7894,7 @@
                                 "example": "2026-05-01"
                               },
                               "confidence": {
-                                "type": "string",
-                                "enum": [
-                                  "high",
-                                  "medium",
-                                  "low"
-                                ],
-                                "description": "Reliability of the prediction.\n* `high` — earnings-grounded (10-Q/10-K) or stdDev of historical intervals ≤ 7 days\n* `medium` — stdDev ≤ 14 days\n* `low` — stdDev > 14 days\n",
-                                "example": "high"
+                                "$ref": "#/components/schemas/Confidence"
                               },
                               "basedOn": {
                                 "type": "string",
@@ -8482,12 +8414,7 @@
             "description": "The period to query data for (annual or quarter).",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             }
           },
           {
@@ -8524,17 +8451,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "facts": {
                         "type": "object",
@@ -8651,13 +8568,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "The reporting period: `annual`, `quarter`, or `ttm` (trailing twelve months). TTM sums the last 4 quarters for flow items and uses the latest quarter for point-in-time items."
           },
@@ -8705,17 +8616,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "fx": {
                         "$ref": "#/components/schemas/FxConversion"
@@ -9184,13 +9085,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "The reporting period: `annual`, `quarter`, or `ttm`. For the balance sheet, TTM returns the most recent quarter's point-in-time values."
           },
@@ -9238,17 +9133,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "fx": {
                         "$ref": "#/components/schemas/FxConversion"
@@ -9861,13 +9746,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "The reporting period: `annual`, `quarter`, or `ttm` (trailing twelve months). TTM sums the last 4 quarters for flow items."
           },
@@ -9905,17 +9784,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "fx": {
                         "$ref": "#/components/schemas/FxConversion"
@@ -10409,13 +10278,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "The reporting period: `annual`, `quarter`, or `ttm` (trailing twelve months)."
           },
@@ -10453,17 +10316,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "revenueGrowth": {
                         "type": "number",
@@ -10625,13 +10478,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter",
-                "ttm"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/Period"
             },
             "description": "The reporting period: `annual`, `quarter`, or `ttm` (trailing twelve months)."
           },
@@ -10682,17 +10529,7 @@
                         "example": 2025
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4",
-                          "TTM"
-                        ],
-                        "description": "The fiscal period type. `FY` for annual, `Q1`–`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/FiscalPeriod"
                       },
                       "sector": {
                         "type": "string",
@@ -11129,17 +10966,7 @@
                       "example": 2025
                     },
                     "fiscalPeriod": {
-                      "type": "string",
-                      "enum": [
-                        "FY",
-                        "Q1",
-                        "Q2",
-                        "Q3",
-                        "Q4",
-                        "TTM"
-                      ],
-                      "description": "The fiscal period type. `FY` for annual, `Q1`-`Q4` for quarterly, `TTM` for trailing-twelve-months.",
-                      "example": "FY"
+                      "$ref": "#/components/schemas/FiscalPeriod"
                     },
                     "piotroskiFScore": {
                       "type": "integer",
@@ -11197,15 +11024,12 @@
                       "example": 4.12
                     },
                     "altmanZone": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "Altman Z-Score classification",
-                      "enum": [
-                        "safe",
-                        "grey",
-                        "distress"
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/AltmanZone"
+                        }
                       ],
-                      "example": "safe"
+                      "nullable": true
                     }
                   }
                 }
@@ -11503,12 +11327,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period"
           },
@@ -11793,12 +11612,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period"
           },
@@ -12023,12 +11837,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period"
           },
@@ -12329,12 +12138,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period"
           },
@@ -12503,12 +12307,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period: `annual` returns FY entries; `quarter` returns Q1-Q4 with Q2/Q3 synthesized from cumulative H1/9M as needed."
           },
@@ -12547,16 +12346,7 @@
                         "example": 2024
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4"
-                        ],
-                        "description": "The fiscal period type. Q2 and Q3 may be synthesized from cumulative H1/9M filings.",
-                        "example": "FY"
+                        "$ref": "#/components/schemas/BaseFiscalPeriod"
                       },
                       "unit": {
                         "type": "string",
@@ -12803,12 +12593,7 @@
             "name": "period",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "annual",
-                "quarter"
-              ],
-              "default": "annual"
+              "$ref": "#/components/schemas/BasePeriod"
             },
             "description": "The reporting period: `annual` returns FY entries; `quarter` returns Q1-Q4 with Q2/Q3 synthesized from cumulative H1/9M as needed."
           },
@@ -12845,15 +12630,7 @@
                         "example": 2026
                       },
                       "fiscalPeriod": {
-                        "type": "string",
-                        "enum": [
-                          "FY",
-                          "Q1",
-                          "Q2",
-                          "Q3",
-                          "Q4"
-                        ],
-                        "example": "FY"
+                        "$ref": "#/components/schemas/BaseFiscalPeriod"
                       },
                       "unit": {
                         "type": "string",
@@ -15958,12 +15735,7 @@
                       "description": "Whole-model confidence + deduped source kinds that appear across citations.",
                       "properties": {
                         "confidence": {
-                          "type": "string",
-                          "enum": [
-                            "low",
-                            "medium",
-                            "high"
-                          ]
+                          "$ref": "#/components/schemas/Confidence"
                         },
                         "sources": {
                           "type": "array",
@@ -19915,11 +19687,7 @@
             "in": "query",
             "name": "type",
             "schema": {
-              "type": "string",
-              "enum": [
-                "stock",
-                "etf"
-              ]
+              "$ref": "#/components/schemas/SecurityType"
             },
             "description": "Filter by security type"
           },
@@ -20654,11 +20422,7 @@
             "in": "query",
             "name": "type",
             "schema": {
-              "type": "string",
-              "enum": [
-                "stock",
-                "etf"
-              ]
+              "$ref": "#/components/schemas/SecurityType"
             },
             "description": "Filter by security type"
           },
