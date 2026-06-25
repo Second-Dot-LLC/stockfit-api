@@ -1,0 +1,3 @@
+# openapi-python-client config. Names the generated package `stockfit_api`.
+package_name_override: stockfit_api
+project_name_override: stockfit-api

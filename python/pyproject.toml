@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stockfit-api"
+version = "0.2.0"
+description = "Official Python SDK for the StockFit API: SEC EDGAR financials, filings, fund and ETF data, ownership, insider transactions, and earnings."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{name = "Second Dot LLC"}]
+keywords = ["stockfit", "sec", "edgar", "financials", "stocks", "etf", "api", "sdk", "fundamentals"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx>=0.23.0",
+    "attrs>=22.2.0",
+]
+
+[project.urls]
+Homepage = "https://developer.stockfit.io"
+Repository = "https://github.com/Second-Dot-LLC/stockfit-api"
+
+# stockfit_api/ is generated and gitignored. Hatchling excludes VCS-ignored files by
+# default, so force-include its sources here (the .py glob skips __pycache__).
+[tool.hatch.build]
+artifacts = ["stockfit_api/**/*.py"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["stockfit_api"]
+
+# The generator doesn't emit a py.typed marker; add one so consumers' type checkers
+# pick up the inline type hints (PEP 561).
+[tool.hatch.build.targets.wheel.force-include]
+"py.typed" = "stockfit_api/py.typed"
+
+[tool.hatch.build.targets.sdist]
+artifacts = ["stockfit_api/**/*.py"]
+include = ["/stockfit_api", "/README.md", "/openapi.json", "/py.typed"]

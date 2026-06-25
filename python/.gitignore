@@ -1,0 +1,10 @@
+.venv/
+stockfit_api/
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+BUILD.md
+scripts/smoke_test.ps1
+.env*
